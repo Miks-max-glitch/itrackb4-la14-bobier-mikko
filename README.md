@@ -1,11 +1,11 @@
-G1. Route model binding needs two things to be true. Name both, and say what happens when only one of them is.
+H1. The top of your error page named a file inside vendor. Say why that was not where your mistake was, and where the page showed you it actually was.
 Answer:
-Route model binding only works when I type-hint Book and name the variable $book so it matches {book} in the route. If only one is right, Laravel can’t figure out which book I mean, so I either get no book at all or just a plain id.
+The top of the error page named a file inside `vendor`, because that is where Laravel stopped when it tried to run `withh()`, a method that does not exist. My mistake was in `app/Http/Controllers/BookController.php` at line ___, which the Exception trace had already opened for me with the line marked in red.
 
-G2. Your Delete link gave a 404 even though the address was correct. Explain why.
+H2. You wrote one Log::info line with a context array. Name something it will tell you next month that the error page could not.
 Answer:
-When I clicked my Delete link, it didn’t show a 404 and just opened the book’s detail page, and nothing got deleted. That’s because a link can only send GET, and GET at that address goes to my show page, while deleting needs a DELETE request.
+My `Log::info('Book saved', ['id' => ...])` line will tell me next month which Book was saved and when. The error page could not tell me that, because it only appears for failures, only while someone is looking, and a successful save is never an error.
 
-G3. old() takes a second argument on your edit form. What would break if you left it out, and what would break if you used only it?
+H3. Your guard answers with 403 instead of redirecting back with a message. Say when each of the two is the better answer.
 Answer:
-If I leave out the second part of old(), my edit form opens empty because there’s nothing to fill it with. If I use only the second part, the form starts filled in, but whenever I make a mistake and submit, my typing disappears and the old saved values come back.
+I used 403 on delete because deleting the last Book in a genre is a request my app should refuse. A redirect back with a message is better when a normal user did something reasonable that did not work, such as a form filled in wrongly, because they need to be told why and try again. A 403 is better when the request should not have been made at all, such as someone typing the delete address by hand.

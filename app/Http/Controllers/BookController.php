@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\Genre;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class BookController extends Controller
 {
@@ -16,7 +17,6 @@ class BookController extends Controller
 
         $genreId = $request->query('genre_id', 'all');
         $year = $request->query('year', 'all');
-
         $query = Book::with('genre');
 
         if ($genreId !== 'all') {
@@ -55,7 +55,11 @@ class BookController extends Controller
 
         $validated['is_featured'] = $request->boolean('is_featured');
 
-        Book::create($validated);
+        $book = Book::create($validated);
+        
+        Log::info('Book Saved', [
+            'id'=>$book->id,
+        ]);
 
         return redirect()
             ->route('books.index')
@@ -95,6 +99,8 @@ class BookController extends Controller
     // E3: remove the record, then go back to the list
     public function destroy(Book $book)
     {
+        abort_if($book->genre->books()->count() === 1, 403);
+
         $book->delete();
 
         return redirect()
