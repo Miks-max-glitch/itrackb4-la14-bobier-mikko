@@ -15,25 +15,37 @@ class BookController extends Controller
         $genres = Genre::all();      // moved up so it is NOT counted
         DB::enableQueryLog();
 
-        $genreId = $request->query('genre_id', 'all');
-        $year = $request->query('year', 'all');
+        $q        = $request->query('q');
+        $genreId  = $request->query('genre_id');
+        $featured = $request->query('featured');
+
+        // I2/I3: only columns on this list may be sorted by; anything else falls back
+        $sort = $request->query('sort', 'title');
+        if (! in_array($sort, ['title', 'author', 'year'])) {
+            $sort = 'title';
+        }
+
         $query = Book::with('genre');
 
-        if ($genreId !== 'all') {
-            $query->where('genre_id', $genreId);
+        if ($q) {
+            $query = $query->where('title', 'like', "%{$q}%");
         }
 
-        if ($year !== 'all') {
-            $query->where('year', $year);
+        if ($genreId !== null && $genreId !== '') {
+            $query = $query->where('genre_id', $genreId);
         }
 
-        $books = $query->get();
+        // "0" is falsy in PHP, so compare properly instead of if ($featured)
+        if ($featured !== null && $featured !== '') {
+            $query = $query->where('is_featured', $featured);
+        }
+
+        // order matters: where -> orderBy -> paginate -> withQueryString
+        $books = $query->orderBy($sort)->paginate(5)->withQueryString();
 
         return view('books.index', [
-            'books' => $books,
+            'books'  => $books,
             'genres' => $genres,
-            'genreId' => $genreId,
-            'year' => $year,
         ]);
     }
 
@@ -56,9 +68,9 @@ class BookController extends Controller
         $validated['is_featured'] = $request->boolean('is_featured');
 
         $book = Book::create($validated);
-        
+
         Log::info('Book Saved', [
-            'id'=>$book->id,
+            'id' => $book->id,
         ]);
 
         return redirect()

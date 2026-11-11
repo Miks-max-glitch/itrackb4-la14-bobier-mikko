@@ -1,20 +1,23 @@
 <?php
 
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BookController;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/books/feature', [BookController::class, 'feature'])
     ->name('books.feature');
 
-Route::get('/books/filter/{genre?}', function (?string $genre = null){
+Route::get('/books/filter/{genre?}', function (?string $genre = null) {
     return redirect()->route('books.index', $genre ? ['genre' => $genre] : []);
 })->name('books.filter');
 
 Route::resource('books', BookController::class);
 
 Route::get('/teachers/featured', [TeacherController::class, 'featured'])
-     ->name('teachers.featured');
+    ->name('teachers.featured');
 
 Route::resource('teachers', TeacherController::class)
-     ->only(['index', 'show']);
+    ->only(['index', 'show']);

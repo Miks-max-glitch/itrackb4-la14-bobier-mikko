@@ -2,19 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Libsys Portal')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 </head>
 <body>
 
+    @include('partials._nav')
+
     <div class="container mt-4 mb-5">
 
-        <h1 class="mb-1">Library Portal</h1>
-        <p class="text-muted mb-3">Prepared by: Mikko S. Bobier</p>
-
-        @include('partials._nav')
-        
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}

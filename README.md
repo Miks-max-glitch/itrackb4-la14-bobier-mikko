@@ -1,11 +1,11 @@
-H1. The top of your error page named a file inside vendor. Say why that was not where your mistake was, and where the page showed you it actually was.
-Answer:
-The top of the error page named a file inside `vendor`, because that is where Laravel stopped when it tried to run `withh()`, a method that does not exist. My mistake was in `app/Http/Controllers/BookController.php` at line ___, which the Exception trace had already opened for me with the line marked in red.
+J1. Your HomeController is not a resource controller. Name two things an index() on a resource controller does that yours does not have to.
 
-H2. You wrote one Log::info line with a context array. Name something it will tell you next month that the error page could not.
-Answer:
-My `Log::info('Book saved', ['id' => ...])` line will tell me next month which Book was saved and when. The error page could not tell me that, because it only appears for failures, only while someone is looking, and a successful save is never an error.
+A resource controller's `index()` gets the list of books from the database and passes them to a list view. It also handles the paging, search and sorting of that list. My `HomeController` does none of that. It has no list to build, so it only passes two counts (`Book::count()` and `Genre::count()`) to the front page and shows it.
 
-H3. Your guard answers with 403 instead of redirecting back with a message. Say when each of the two is the better answer.
-Answer:
-I used 403 on delete because deleting the last Book in a genre is a request my app should refuse. A redirect back with a message is better when a normal user did something reasonable that did not work, such as a form filled in wrongly, because they need to be told why and try again. A 403 is better when the request should not have been made at all, such as someone typing the delete address by hand.
+J2. Your pagination links lost the search term until you added one method. Say what those links contained before, and what the controller therefore received.
+
+Before I added `withQueryString()`, the page links only contained `?page=2`. They had no `q=the` in them, so the controller received just the page number and no search word. With no search to apply, it showed the full book list again, and the search box came back empty.
+
+J3. A misspelled sort value does not break your page. Explain why that is worse than an error, and what your allowed list does about it.
+
+On SQLite, a wrong sort name like `?sort=titel` doesn't break the page. It just comes back in no particular order, so nobody sees an error or reports it, and it stays hidden. My allowed list (`title`, `author`, `year`) checks the sort value first. If it isn't on the list, the controller uses `title` instead, so the books are always sorted properly.

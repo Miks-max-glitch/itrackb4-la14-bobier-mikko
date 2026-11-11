@@ -8,44 +8,45 @@
 
     <a href="{{ route('books.create') }}" class="btn btn-success mb-3">+ Add Book</a>
 
-    <div class="alert alert-light border d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <span class="text-muted">Active filters:</span>
-            <span class="badge bg-primary">Genre: {{ $genreId }}</span>
-            <span class="badge bg-primary">Year: {{ $year }}</span>
+    <form method="GET" action="{{ route('books.index') }}" class="row g-2 mb-4">
+        <div class="col-md-3">
+            <input type="text" name="q" value="{{ request('q') }}"
+                   class="form-control" placeholder="Search by title...">
         </div>
-        <a href="{{ route('books.index') }}" class="btn btn-sm btn-outline-secondary">Clear all</a>
-    </div>
 
-    <div class="mb-3">
-        <strong class="me-2">Genre:</strong>
-        <div class="btn-group btn-group-sm" role="group">
-            <a href="{{ route('books.index', ['genre_id' => 'all', 'year' => $year]) }}"
-            class="btn {{ $genreId === 'all' ? 'btn-primary' : 'btn-outline-primary' }}">All</a>
-            @foreach ($genres as $g)
-                <a href="{{ route('books.index', ['genre_id' => $g->id, 'year' => $year]) }}"
-                class="btn {{ (string) $genreId === (string) $g->id ? 'btn-primary' : 'btn-outline-primary' }}">{{ $g->name }}</a>
-            @endforeach
+        <div class="col-md-2">
+            <select name="genre_id" class="form-select">
+                <option value="">All genres</option>
+                @foreach ($genres as $g)
+                    <option value="{{ $g->id }}"
+                        @selected(request('genre_id') == $g->id)>{{ $g->name }}</option>
+                @endforeach
+            </select>
         </div>
-    </div>
 
-    <div class="mb-4">
-        <strong class="me-2">Year:</strong>
-        <div class="btn-group btn-group-sm" role="group">
-            <a href="{{ route('books.index', ['genre_id' => $genreId, 'year' => 'all']) }}"
-               class="btn {{ $year === 'all' ? 'btn-primary' : 'btn-outline-primary' }}">All</a>
-            <a href="{{ route('books.index', ['genre_id' => $genreId, 'year' => '1950']) }}"
-               class="btn {{ $year === '1950' ? 'btn-primary' : 'btn-outline-primary' }}">1950</a>
-            <a href="{{ route('books.index', ['genre_id' => $genreId, 'year' => '1954']) }}"
-               class="btn {{ $year === '1954' ? 'btn-primary' : 'btn-outline-primary' }}">1954</a>
-            <a href="{{ route('books.index', ['genre_id' => $genreId, 'year' => '1978']) }}"
-               class="btn {{ $year === '1978' ? 'btn-primary' : 'btn-outline-primary' }}">1978</a>
-            <a href="{{ route('books.index', ['genre_id' => $genreId, 'year' => '2000']) }}"
-               class="btn {{ $year === '2000' ? 'btn-primary' : 'btn-outline-primary' }}">2000</a>
+        <div class="col-md-2">
+            <select name="featured" class="form-select">
+                <option value="">Any</option>
+                <option value="1" @selected(request('featured') === '1')>Featured</option>
+                <option value="0" @selected(request('featured') === '0')>Not featured</option>
+            </select>
         </div>
-    </div>
 
-        <table class="table table-striped">
+        <div class="col-md-2">
+            <select name="sort" class="form-select">
+                <option value="title"  @selected(request('sort', 'title') === 'title')>Sort: Title</option>
+                <option value="author" @selected(request('sort') === 'author')>Sort: Author</option>
+                <option value="year"   @selected(request('sort') === 'year')>Sort: Year</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button class="btn btn-primary">Apply</button>
+            <a href="{{ route('books.index') }}" class="btn btn-outline-secondary">Clear</a>
+        </div>
+    </form>
+
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
@@ -80,7 +81,7 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('books.index', ['genre_id' => $book['genre_id'], 'year' => $year]) }}">
+                        <a href="{{ route('books.index', ['genre_id' => $book['genre_id']]) }}">
                             {{ $book->genre->name }}
                         </a>
                     </td>
@@ -101,6 +102,9 @@
             @endforelse
         </tbody>
     </table>
+
+    {{ $books->links() }}
+
     <p>Queries: {{ count(\Illuminate\Support\Facades\DB::getQueryLog()) }}</p>
 
 @endsection
