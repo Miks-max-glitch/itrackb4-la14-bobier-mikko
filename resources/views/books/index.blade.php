@@ -5,7 +5,6 @@
 @section('content')
 
     <h2 class="mb-3">List of Recommendations</h2>
-
     <a href="{{ route('books.create') }}" class="btn btn-success mb-3">+ Add Book</a>
 
     <form method="GET" action="{{ route('books.index') }}" class="row g-2 mb-4">
@@ -97,7 +96,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6">No Books Available</td>
+                    <td colspan="6">No Books Available</td> 
                 </tr>
             @endforelse
         </tbody>
